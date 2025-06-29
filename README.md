@@ -67,7 +67,10 @@ Navigate into the project directory and run the API.
 cd MyWebApi
 dotnet run
 ```
-
+Or you can run the following to choose a different profile (eg: https) - check your launchsettings
+```bash
+dotnet run --launch-profile "https"
+```
 You should see output like:
 
 ```
