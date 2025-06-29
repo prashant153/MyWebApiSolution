@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "IqCgrtWEx40=",
+  "success": true,
+  "projectFilePath": "/Users/prashantkumar/Documents/aspnet-projects/SampleSolution/MyWebApiSolution/MyWebApi/MyWebApi.csproj",
+  "expectedPackageFiles": [
+    "/Users/prashantkumar/.nuget/packages/microsoft.aspnetcore.openapi/9.0.5/microsoft.aspnetcore.openapi.9.0.5.nupkg.sha512",
+    "/Users/prashantkumar/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
