@@ -2,6 +2,8 @@
 
 ### What is MVC?
 
+### It's an Architectural Software Pattern that implements User Interface
+
 **MVC** stands for:
 
 | Component     | Purpose                                |
