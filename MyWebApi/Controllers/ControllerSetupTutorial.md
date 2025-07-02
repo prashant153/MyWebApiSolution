@@ -9,7 +9,8 @@
 - [5. Adding a Controller](#5-adding-a-controller)
 - [6. Why Inherit from ControllerBase?](#6-why-inherit-from-controllerbase)
 - [7. Accessing ModelState and User](#7-accessing-modelstate-and-user)
-- [8. Summary of Steps](#8-summary-of-steps)
+- [8. What Does ApiController Attribute Do?](#8-what-does-apicontroller-attribute-do)
+- [9. Summary of Steps](#9-summary-of-steps)
 
 ---
 
@@ -118,13 +119,59 @@ namespace MyWebApi.Controllers
 
 ---
 
-## 8. Summary of Steps
+
+## 8. What Does ApiController Attribute Do?
+
+The `[ApiController]` attribute enables several helpful features for your API controllers:
+
+### 1. Attribute Routing Support
+- Controllers with `[ApiController]` use **attribute routing** by default.
+- Example:
+  ```csharp
+  [Route("api/[controller]")]
+  public class HelloWorldController : ControllerBase { ... }
+  ```
+  This means the route is automatically set to `/api/helloworld`.
+
+### 2. Automatic Model Validation
+- If the incoming request model is invalid, the framework automatically returns a `400 Bad Request` with error details.
+- Example:
+  ```csharp
+  [HttpPost]
+  public IActionResult Post([FromBody] MyModel model)
+  {
+      // No need to check ModelState.IsValid manually
+      ...
+  }
+  ```
+
+### 3. Automatic Problem Details Responses
+- On validation errors or certain exceptions, the response is formatted as a [Problem Details](https://datatracker.ietf.org/doc/html/rfc7807) object (standardized error response).
+- Example error response:
+  ```json
+  {
+    "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+    "title": "One or more validation errors occurred.",
+    "status": 400,
+    "errors": {
+      "Name": ["The Name field is required."]
+    }
+  }
+  ```
+
+### 4. Parameter Binding Improvements
+- `[ApiController]` infers parameter binding sources (e.g., `[FromBody]`, `[FromRoute]`, `[FromQuery]`) so you often don't need to specify them explicitly.
+
+---
+
+## 9. Summary of Steps
 
 1. Register services: `AddEndpointsApiExplorer`, `AddSwaggerGen`, `AddControllers`.
 2. Add middleware: `UseSwagger`, `UseSwaggerUI`, `UseHttpsRedirection`.
 3. Map endpoints: `MapControllers`.
 4. Create controllers inheriting from `ControllerBase`.
 5. Use `ModelState` and `User` as needed in your controllers.
+6. Decorate controllers with `[ApiController]` for enhanced API behaviors.
 
 ---
 
