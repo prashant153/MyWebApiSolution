@@ -1,11 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "IqCgrtWEx40=",
+  "dgSpecHash": "9bSvw3RO9bo=",
   "success": true,
   "projectFilePath": "/Users/prashantkumar/Documents/aspnet-projects/SampleSolution/MyWebApiSolution/MyWebApi/MyWebApi.csproj",
   "expectedPackageFiles": [
     "/Users/prashantkumar/.nuget/packages/microsoft.aspnetcore.openapi/9.0.5/microsoft.aspnetcore.openapi.9.0.5.nupkg.sha512",
-    "/Users/prashantkumar/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+    "/Users/prashantkumar/.nuget/packages/microsoft.extensions.apidescription.server/8.0.0/microsoft.extensions.apidescription.server.8.0.0.nupkg.sha512",
+    "/Users/prashantkumar/.nuget/packages/microsoft.openapi/1.6.23/microsoft.openapi.1.6.23.nupkg.sha512",
+    "/Users/prashantkumar/.nuget/packages/swashbuckle.aspnetcore/9.0.1/swashbuckle.aspnetcore.9.0.1.nupkg.sha512",
+    "/Users/prashantkumar/.nuget/packages/swashbuckle.aspnetcore.swagger/9.0.1/swashbuckle.aspnetcore.swagger.9.0.1.nupkg.sha512",
+    "/Users/prashantkumar/.nuget/packages/swashbuckle.aspnetcore.swaggergen/9.0.1/swashbuckle.aspnetcore.swaggergen.9.0.1.nupkg.sha512",
+    "/Users/prashantkumar/.nuget/packages/swashbuckle.aspnetcore.swaggerui/9.0.1/swashbuckle.aspnetcore.swaggerui.9.0.1.nupkg.sha512"
   ],
   "logs": []
 }

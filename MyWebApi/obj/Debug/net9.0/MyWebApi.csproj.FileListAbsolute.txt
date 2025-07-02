@@ -32,3 +32,6 @@
 /Users/prashantkumar/Documents/aspnet-projects/SampleSolution/MyWebApiSolution/MyWebApi/obj/Debug/net9.0/MyWebApi.pdb
 /Users/prashantkumar/Documents/aspnet-projects/SampleSolution/MyWebApiSolution/MyWebApi/obj/Debug/net9.0/MyWebApi.genruntimeconfig.cache
 /Users/prashantkumar/Documents/aspnet-projects/SampleSolution/MyWebApiSolution/MyWebApi/obj/Debug/net9.0/ref/MyWebApi.dll
+/Users/prashantkumar/Documents/aspnet-projects/SampleSolution/MyWebApiSolution/MyWebApi/bin/Debug/net9.0/Swashbuckle.AspNetCore.Swagger.dll
+/Users/prashantkumar/Documents/aspnet-projects/SampleSolution/MyWebApiSolution/MyWebApi/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerGen.dll
+/Users/prashantkumar/Documents/aspnet-projects/SampleSolution/MyWebApiSolution/MyWebApi/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll

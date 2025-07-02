@@ -2,19 +2,31 @@
 
 ## Index
 
-- [1. Registering Services](#1-registering-services)
-- [2. Using Middleware](#2-using-middleware)
-- [3. Mapping Endpoints](#3-mapping-endpoints)
-- [4. Use() vs Map()](#4-use-vs-map)
-- [5. Adding a Controller](#5-adding-a-controller)
-- [6. Why Inherit from ControllerBase?](#6-why-inherit-from-controllerbase)
-- [7. Accessing ModelState and User](#7-accessing-modelstate-and-user)
-- [8. What Does ApiController Attribute Do?](#8-what-does-apicontroller-attribute-do)
-- [9. Summary of Steps](#9-summary-of-steps)
+- [1. Installing Swagger Package](#1-installing-swagger-package)
+- [2. Registering Services](#2-registering-services)
+- [3. Using Middleware](#3-using-middleware)
+- [4. Mapping Endpoints](#4-mapping-endpoints)
+- [5. Use() vs Map()](#5-use-vs-map)
+- [6. Adding a Controller](#6-adding-a-controller)
+- [7. Why Inherit from ControllerBase?](#7-why-inherit-from-controllerbase)
+- [8. Accessing ModelState and User](#8-accessing-modelstate-and-user)
+- [9. What Does ApiController Attribute Do?](#9-what-does-apicontroller-attribute-do)
+- [10. Summary of Steps](#10-summary-of-steps)
 
 ---
 
-## 1. Registering Services
+## 1. Installing Swagger Package
+
+To enable Swagger/OpenAPI support, you need to add the Swashbuckle.AspNetCore NuGet package to your project.  
+Run the following command in your terminal:
+
+```bash
+dotnet add package Swashbuckle.AspNetCore
+```
+
+---
+
+## 2. Registering Services
 
 Before you can use controllers or Swagger/OpenAPI documentation, you must register the necessary services in your `Program.cs`:
 
@@ -30,7 +42,7 @@ builder.Services.AddControllers();          // For controller support
 
 ---
 
-## 2. Using Middleware
+## 3. Using Middleware
 
 Middleware is added to the HTTP request pipeline using `app.UseXxx()` methods. For example:
 
@@ -50,7 +62,7 @@ app.UseHttpsRedirection(); // Redirects HTTP requests to HTTPS
 
 ---
 
-## 3. Mapping Endpoints
+## 4. Mapping Endpoints
 
 Endpoints are mapped using `app.MapXxx()` methods. For controllers:
 
@@ -62,7 +74,7 @@ app.MapControllers();
 
 ---
 
-## 4. Use() vs Map()
+## 5. Use() vs Map()
 
 - **Use()**: Adds middleware to the pipeline. Middleware can process all requests and responses.
 - **Map()**: Defines endpoints and connects specific routes/URLs to handlers (like controllers or minimal APIs).
@@ -73,7 +85,7 @@ app.MapControllers();
 
 ---
 
-## 5. Adding a Controller
+## 6. Adding a Controller
 
 Create a new controller in the `Controllers` folder, e.g., `HelloWorldController.cs`:
 
@@ -101,7 +113,7 @@ namespace MyWebApi.Controllers
 
 ---
 
-## 6. Why Inherit from ControllerBase?
+## 7. Why Inherit from ControllerBase?
 
 - **ControllerBase** provides core features for Web API controllers:
   - Methods like `Ok()`, `NotFound()`, `BadRequest()`, etc., for standard HTTP responses.
@@ -112,15 +124,14 @@ namespace MyWebApi.Controllers
 
 ---
 
-## 7. Accessing ModelState and User
+## 8. Accessing ModelState and User
 
 - **ModelState**: Use `ModelState.IsValid` to check if incoming data is valid.
 - **User**: Use the `User` property to access the current authenticated user.
 
 ---
 
-
-## 8. What Does ApiController Attribute Do?
+## 9. What Does ApiController Attribute Do?
 
 The `[ApiController]` attribute enables several helpful features for your API controllers:
 
@@ -164,14 +175,15 @@ The `[ApiController]` attribute enables several helpful features for your API co
 
 ---
 
-## 9. Summary of Steps
+## 10. Summary of Steps
 
-1. Register services: `AddEndpointsApiExplorer`, `AddSwaggerGen`, `AddControllers`.
-2. Add middleware: `UseSwagger`, `UseSwaggerUI`, `UseHttpsRedirection`.
-3. Map endpoints: `MapControllers`.
-4. Create controllers inheriting from `ControllerBase`.
-5. Use `ModelState` and `User` as needed in your controllers.
-6. Decorate controllers with `[ApiController]` for enhanced API behaviors.
+1. **Install Swagger package:** `dotnet add package Swashbuckle.AspNetCore`
+2. **Register services:** `AddEndpointsApiExplorer`, `AddSwaggerGen`, `AddControllers`.
+3. **Add middleware:** `UseSwagger`, `UseSwaggerUI`, `UseHttpsRedirection`.
+4. **Map endpoints:** `MapControllers`.
+5. **Create controllers** inheriting from `ControllerBase`.
+6. **Use `ModelState` and `User`** as needed in your controllers.
+7. **Decorate controllers with `[ApiController]`** for enhanced API behaviors.
 
 ---
 
