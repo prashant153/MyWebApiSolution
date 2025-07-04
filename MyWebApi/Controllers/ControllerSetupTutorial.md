@@ -11,7 +11,8 @@
 - [7. Why Inherit from ControllerBase?](#7-why-inherit-from-controllerbase)
 - [8. Accessing ModelState and User](#8-accessing-modelstate-and-user)
 - [9. What Does ApiController Attribute Do?](#9-what-does-apicontroller-attribute-do)
-- [10. Summary of Steps](#10-summary-of-steps)
+- [10. Middleware Routing in ASP.NET Core](#10--understanding-appmapcontrollers-vs-userouting--useendpoints)
+- [11. Summary of Steps](#10-summary-of-steps)
 
 ---
 
@@ -174,8 +175,82 @@ The `[ApiController]` attribute enables several helpful features for your API co
 - `[ApiController]` infers parameter binding sources (e.g., `[FromBody]`, `[FromRoute]`, `[FromQuery]`) so you often don't need to specify them explicitly.
 
 ---
+## 10. 🔀 Understanding `app.MapControllers()` vs `UseRouting()` + `UseEndpoints()`
 
-## 10. Summary of Steps
+In ASP.NET Core, both of these setups help route incoming HTTP requests to your controllers. However, they apply to **different versions and hosting models**.
+
+---
+
+### ✅ 1. Using `app.MapControllers()` (Modern Minimal Hosting)
+
+This is the **preferred approach in .NET 6+** using the new **minimal hosting model** (`Program.cs` only, no `Startup.cs`).
+
+#### 🔸 Code Example
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// Add controller support
+builder.Services.AddControllers();
+
+var app = builder.Build();
+
+// Maps attribute-routed controllers
+app.MapControllers();
+
+app.Run();
+```
+
+#### 🔍 Notes
+- Simple and clean
+- No need for `UseRouting()` or `UseEndpoints(...)`
+- Works well with attribute routing like `[Route("api/[controller]")]`
+
+---
+
+### ✅ 2. Using `app.UseRouting()` + `app.UseEndpoints(...)` (Classic Middleware Style)
+
+This is used in **.NET Core 3.1 / 5** or when you're using a **Startup.cs file**.
+
+#### 🔸 Code Example (inside `Startup.cs → Configure` method)
+
+```csharp
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    // Enable routing middleware
+    app.UseRouting();
+
+    // Optional: authz/authn goes here
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    // Map controller endpoints
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+    });
+}
+```
+
+#### 🔍 Notes
+- More verbose, but flexible
+- Required if you're using custom middleware pipeline
+- Must call `UseRouting()` **before** `UseEndpoints()`
+
+---
+
+## 🔁 Quick Comparison
+
+| Feature                    | `app.MapControllers()`         | `UseRouting()` + `UseEndpoints()`      |
+|----------------------------|--------------------------------|-----------------------------------------|
+| Introduced In              | .NET 6+ (minimal hosting)      | .NET Core 3.1 / 5                       |
+| Simpler Syntax             | ✅ Yes                          | ❌ No (more verbose)                    |
+| Attribute Routing Support  | ✅ Yes                          | ✅ Yes                                  |
+| Pipeline Control           | 🔸 Limited                      | ✅ More control                         |
+| Needs Startup.cs           | ❌ No                           | ✅ Yes
+
+
+## 11. Summary of Steps
 
 1. **Install Swagger package:** `dotnet add package Swashbuckle.AspNetCore`
 2. **Register services:** `AddEndpointsApiExplorer`, `AddSwaggerGen`, `AddControllers`.
