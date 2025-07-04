@@ -12,7 +12,8 @@
 - [8. Accessing ModelState and User](#8-accessing-modelstate-and-user)
 - [9. What Does ApiController Attribute Do?](#9-what-does-apicontroller-attribute-do)
 - [10. Middleware Routing in ASP.NET Core](#10--understanding-appmapcontrollers-vs-userouting--useendpoints)
-- [11. Summary of Steps](#10-summary-of-steps)
+- [11. Route attribute in ASP.NET Core](#11--understanding-the-route-attribute-in-aspnet-core)
+- [12. Summary of Steps](#12-summary-of-steps)
 
 ---
 
@@ -249,8 +250,120 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 | Pipeline Control           | 🔸 Limited                      | ✅ More control                         |
 | Needs Startup.cs           | ❌ No                           | ✅ Yes
 
+## 11. 🧭 Understanding the `[Route]` Attribute in ASP.NET Core
 
-## 11. Summary of Steps
+The `[Route]` attribute in ASP.NET Core Web API is used to **map incoming HTTP requests to the correct controller and action methods** based on the URL.
+
+---
+
+### 🔹 What Does `[Route]` Do?
+
+- It defines the **URL pattern** that an API controller or action responds to.
+- You can apply it at the **controller level** (base route) and/or **action level** (specific endpoints).
+
+---
+
+### 📌 Route Tokens
+
+ASP.NET Core allows **tokens** inside the route for dynamic resolution:
+
+| Token         | Description                                     |
+|---------------|-------------------------------------------------|
+| `[controller]`| Replaced by the controller class name (minus `Controller`) |
+| `[action]`    | Replaced by the method name                     |
+| `[area]`      | Used for MVC Areas (if applicable)              |
+
+---
+
+## 🧪 Examples
+
+### ✅ Example 1: `[Route("api/[controller]")]`
+
+```csharp
+[Route("api/[controller]")]
+[ApiController]
+public class WeatherForecastController : ControllerBase
+{
+    [HttpGet]
+    public IActionResult Get() => Ok("Today's forecast");
+}
+```
+
+📍 **Responds to:** `GET /api/weatherforecast`
+
+---
+
+### ✅ Example 2: Add Action-Specific Route
+
+```csharp
+[Route("api/[controller]")]
+[ApiController]
+public class ProductsController : ControllerBase
+{
+    [HttpGet("featured")]
+    public IActionResult GetFeatured() => Ok("Featured products");
+}
+```
+
+📍 **Responds to:** `GET /api/products/featured`
+
+---
+
+### ✅ Example 3: Use Route Parameters
+
+```csharp
+[Route("api/products")]
+[ApiController]
+public class ProductsController : ControllerBase
+{
+    [HttpGet("{id}")]
+    public IActionResult GetById(int id) => Ok($"Product ID: {id}");
+}
+```
+
+📍 **Responds to:** `GET /api/products/42`
+
+---
+
+### ✅ Example 4: Absolute Route on Controller
+
+```csharp
+[Route("store/products")]
+[ApiController]
+public class StoreController : ControllerBase
+{
+    [HttpGet]
+    public IActionResult Get() => Ok("Store products list");
+}
+```
+
+📍 **Responds to:** `GET /store/products`
+
+---
+
+## 🧠 Real-World Analogy
+
+> 🧑‍🍳 Think of `[Route]` like a **restaurant menu item code**.
+>
+> The **URL is the customer order**, and the `[Route]` tells the API **which kitchen station (controller + method)** will fulfill it.
+
+---
+
+## 📌 Summary
+
+| Element         | Purpose                                      |
+|------------------|----------------------------------------------|
+| `[Route]`        | Binds URL path to controller/action           |
+| `[HttpGet("x")]` | Shorthand for GET + route mapping             |
+| Tokens like `[controller]` | Replaceable placeholders             |
+| Works With       | `[HttpGet]`, `[HttpPost]`, `[HttpPut]`, etc. |
+
+---
+
+✅ Use `[Route]` to cleanly organize your API endpoints and make them predictable and RESTful.
+
+
+## 12. Summary of Steps
 
 1. **Install Swagger package:** `dotnet add package Swashbuckle.AspNetCore`
 2. **Register services:** `AddEndpointsApiExplorer`, `AddSwaggerGen`, `AddControllers`.
