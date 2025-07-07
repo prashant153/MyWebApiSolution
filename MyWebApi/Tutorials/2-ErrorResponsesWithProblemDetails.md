@@ -74,41 +74,41 @@ public void ConfigureServices(IServiceCollection services)
 
 {
 
-services.AddControllers()
+  services.AddControllers()
 
-.AddNewtonsoftJson()
+    .AddNewtonsoftJson()
 
-.ConfigureApiBehaviorOptions(options =>
+    .ConfigureApiBehaviorOptions(options =>
 
-{
+      {
 
-options.SuppressMapClientErrors = true;
+        options.SuppressMapClientErrors = true;
 
-options.InvalidModelStateResponseFactory = context =>
+        options.InvalidModelStateResponseFactory = context =>
 
-{
+          {
 
-var problemDetails = new ValidationProblemDetails(context.ModelState)
+            var problemDetails = new ValidationProblemDetails(context.ModelState)
 
-{
+            {
 
-Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+              Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
 
-Title = "One or more validation errors occurred.",
+                Title = "One or more validation errors occurred.",
 
-Status = StatusCodes.Status400BadRequest,
+                Status = StatusCodes.Status400BadRequest,
 
-Instance = context.HttpContext.Request.Path,
+                Instance = context.HttpContext.Request.Path,
 
-Detail = "Please refer to the errors property for additional details."
+                Detail = "Please refer to the errors property for additional details."
 
-};
+            };
 
-return new BadRequestObjectResult(problemDetails);
+            return new BadRequestObjectResult(problemDetails);
 
-};
+          };
 
-});
+      });
 
 }
 
@@ -116,27 +116,25 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 
 {
 
-if (env.IsDevelopment())
+  if (env.IsDevelopment())
 
-{
+  {
 
-app.UseDeveloperExceptionPage();
+    app.UseDeveloperExceptionPage();
 
-}
+  } else
 
-else
+  {
 
-{
+    // Use Problem Details for error handling in production
 
-// Use Problem Details for error handling in production
+    app.UseExceptionHandler("/error");
 
-app.UseExceptionHandler("/error");
+  }
 
-}
+  app.UseStatusCodePagesWithReExecute("/error/{0}"); // Handle status codes
 
-app.UseStatusCodePagesWithReExecute("/error/{0}"); // Handle status codes
-
-// Other middleware...
+  // Other middleware...
 
 }
 
@@ -154,57 +152,57 @@ Create a custom controller for handling errors:
 
 [ApiExplorerSettings(IgnoreApi = true)]
 
-public class ErrorController : ControllerBase
+public class ErrorController: ControllerBase
 
 {
 
-[Route("{statusCode}")]
+  [Route("{statusCode}")]
 
-public IActionResult Error(int statusCode)
+  public IActionResult Error(int statusCode)
 
-{
+  {
 
-var problemDetails = new ProblemDetails
+    var problemDetails = new ProblemDetails
 
-{
+    {
 
-Status = statusCode,
+      Status = statusCode,
 
-Title = "An error occurred",
+        Title = "An error occurred",
 
-Type = $"https://httpstatuses.com/{statusCode}",
+        Type = $ "https://httpstatuses.com/{statusCode}",
 
-Instance = HttpContext.Request.Path
+        Instance = HttpContext.Request.Path
 
-};
+    };
 
-switch (statusCode)
+    switch (statusCode)
 
-{
+    {
 
-case 404:
+    case 404:
 
-problemDetails.Title = "Resource not found";
+      problemDetails.Title = "Resource not found";
 
-problemDetails.Detail = "The requested resource was not found.";
+      problemDetails.Detail = "The requested resource was not found.";
 
-break;
+      break;
 
-case 500:
+    case 500:
 
-problemDetails.Title = "Internal server error";
+      problemDetails.Title = "Internal server error";
 
-problemDetails.Detail = "An unexpected error occurred.";
+      problemDetails.Detail = "An unexpected error occurred.";
 
-break;
+      break;
 
-// Add more cases as needed
+      // Add more cases as needed
 
-}
+    }
 
-return StatusCode(statusCode, problemDetails);
+    return StatusCode(statusCode, problemDetails);
 
-}
+  }
 
 }
 
@@ -222,19 +220,19 @@ public IActionResult CreateProduct([FromBody] ProductDto product)
 
 {
 
-if (!ModelState.IsValid)
+  if (!ModelState.IsValid)
 
-{
+  {
 
-// This will automatically return a Problem Details response
+    // This will automatically return a Problem Details response
 
-return BadRequest(ModelState);
+    return BadRequest(ModelState);
 
-}
+  }
 
-// Process valid product...
+  // Process valid product...
 
-return Ok();
+  return Ok();
 
 }
 
@@ -276,81 +274,79 @@ public class ExceptionMiddleware
 
 {
 
-private readonly RequestDelegate _next;
+  private readonly RequestDelegate _next;
 
-private readonly ILogger _logger;
+  private readonly ILogger _logger;
 
-public ExceptionMiddleware(RequestDelegate next, ILogger logger)
+  public ExceptionMiddleware(RequestDelegate next, ILogger logger)
 
-{
+  {
 
-_next = next;
+    _next = next;
 
-_logger = logger;
+    _logger = logger;
 
-}
+  }
 
-public async Task InvokeAsync(HttpContext httpContext)
+  public async Task InvokeAsync(HttpContext httpContext)
 
-{
+  {
 
-try
+    try
 
-{
+    {
 
-await _next(httpContext);
+      await _next(httpContext);
 
-}
+    } catch (Exception ex)
 
-catch (Exception ex)
+    {
 
-{
+      _logger.LogError(ex, "An unhandled exception occurred.");
 
-_logger.LogError(ex, "An unhandled exception occurred.");
+      await HandleExceptionAsync(httpContext, ex);
 
-await HandleExceptionAsync(httpContext, ex);
+    }
 
-}
+  }
 
-}
+  private static Task HandleExceptionAsync(HttpContext context, Exception exception)
 
-private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+  {
 
-{
+    context.Response.ContentType = "application/problem+json";
 
-context.Response.ContentType = "application/problem+json";
+    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+    var problemDetails = new ProblemDetails
 
-var problemDetails = new ProblemDetails
+    {
 
-{
+      Status = StatusCodes.Status500InternalServerError,
 
-Status = StatusCodes.Status500InternalServerError,
+        Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
 
-Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+        Title = "Internal Server Error",
 
-Title = "Internal Server Error",
+        Detail = exception.Message,
 
-Detail = exception.Message,
+        Instance = context.Request.Path
 
-Instance = context.Request.Path
+    };
 
-};
+    // Add exception details in development
 
-// Add exception details in development
+    if (context.RequestServices.GetRequiredService().IsDevelopment())
 
-if (context.RequestServices.GetRequiredService().IsDevelopment())
+    {
 
-{
+      problemDetails.Extensions.Add("stackTrace", exception.StackTrace);
 
-problemDetails.Extensions.Add("stackTrace", exception.StackTrace);
+    }
 
-}
+    return context.Response.WriteAsync(JsonConvert.SerializeObject(problemDetails));
 
-return context.Response.WriteAsync(JsonConvert.SerializeObject(problemDetails));
-
-}
+  }
 
 }
 
@@ -370,75 +366,75 @@ app.UseMiddleware();
 
 ```csharp
 
-public class CustomProblemDetailsFactory : ProblemDetailsFactory
+public class CustomProblemDetailsFactory: ProblemDetailsFactory
 
 {
 
-public override ProblemDetails CreateProblemDetails(
+  public override ProblemDetails CreateProblemDetails(
 
-HttpContext httpContext,
+    HttpContext httpContext,
 
-int? statusCode = null,
+    int ? statusCode = null,
 
-string title = null,
+    string title = null,
 
-string type = null,
+    string type = null,
 
-string detail = null,
+    string detail = null,
 
-string instance = null)
+    string instance = null)
 
-{
+  {
 
-statusCode ??= 500;
+    statusCode ??= 500;
 
-var problemDetails = new ProblemDetails
+    var problemDetails = new ProblemDetails
 
-{
+    {
 
-Status = statusCode,
+      Status = statusCode,
 
-Title = title,
+        Title = title,
 
-Type = type,
+        Type = type,
 
-Detail = detail,
+        Detail = detail,
 
-Instance = instance
+        Instance = instance
 
-};
+    };
 
-// Add custom properties
+    // Add custom properties
 
-problemDetails.Extensions.Add("timestamp", DateTime.UtcNow);
+    problemDetails.Extensions.Add("timestamp", DateTime.UtcNow);
 
-problemDetails.Extensions.Add("requestId", httpContext.TraceIdentifier);
+    problemDetails.Extensions.Add("requestId", httpContext.TraceIdentifier);
 
-return problemDetails;
+    return problemDetails;
 
-}
+  }
 
-public override ValidationProblemDetails CreateValidationProblemDetails(
+  public override ValidationProblemDetails CreateValidationProblemDetails(
 
-HttpContext httpContext,
+    HttpContext httpContext,
 
-ModelStateDictionary modelStateDictionary,
+    ModelStateDictionary modelStateDictionary,
 
-int? statusCode = null,
+    int ? statusCode = null,
 
-string title = null,
+    string title = null,
 
-string type = null,
+    string type = null,
 
-string detail = null,
+    string detail = null,
 
-string instance = null)
+    string instance = null)
 
-{
+  {
 
-// Similar implementation for validation problems
+    // Similar implementation for validation problems
 
-}
+  }
 
 }
 
@@ -462,73 +458,73 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails(options =>
 
-{
+  {
 
-options.CustomizeProblemDetails = ctx =>
+    options.CustomizeProblemDetails = ctx =>
 
-{
+      {
 
-ctx.ProblemDetails.Extensions.Add("nodeId", Environment.MachineName);
+        ctx.ProblemDetails.Extensions.Add("nodeId", Environment.MachineName);
 
-};
+      };
 
-});
+  });
 
 var app = builder.Build();
 
 app.UseExceptionHandler(exceptionHandlerApp =>
 
-{
+  {
 
-exceptionHandlerApp.Run(async context =>
+    exceptionHandlerApp.Run(async context =>
 
-{
+      {
 
-context.Response.ContentType = "application/problem+json";
+        context.Response.ContentType = "application/problem+json";
 
-var problemDetails = new ProblemDetails
+        var problemDetails = new ProblemDetails
 
-{
+        {
 
-Status = context.Response.StatusCode,
+          Status = context.Response.StatusCode,
 
-Title = "An error occurred",
+            Title = "An error occurred",
 
-Type = "https://httpstatuses.com/" + context.Response.StatusCode
+            Type = "https://httpstatuses.com/" + context.Response.StatusCode
 
-};
+        };
 
-await context.Response.WriteAsJsonAsync(problemDetails);
+        await context.Response.WriteAsJsonAsync(problemDetails);
 
-});
+      });
 
-});
+  });
 
 app.UseStatusCodePages();
 
 app.MapGet("/products/{id}", (int id) =>
 
-{
+  {
 
-if (id < 1)
+    if (id < 1)
 
-{
+    {
 
-return Results.Problem(
+      return Results.Problem(
 
-title: "Invalid ID",
+        title: "Invalid ID",
 
-detail: "ID must be a positive integer",
+        detail: "ID must be a positive integer",
 
-statusCode: 400);
+        statusCode: 400);
 
-}
+    }
 
-// Handle valid request
+    // Handle valid request
 
-return Results.Ok(new Product(id, "Sample Product"));
+    return Results.Ok(new Product(id, "Sample Product"));
 
-});
+  });
 
 app.Run();
 
