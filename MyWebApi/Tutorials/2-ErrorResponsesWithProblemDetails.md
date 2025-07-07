@@ -43,16 +43,68 @@ Problem Details is a standardized format for returning machine-readable error de
 }
 
 ```
-
 ## Why Use Problem Details?
 
-1. **Standardization**: Follows an IETF standard (RFC 7807)
+### 1. Standardization
+Follows IETF standard [RFC 7807](https://tools.ietf.org/html/rfc7807)
+```csharp
+{
+  "type": "about:blank",
+  "title": "Invalid Request",
+  "status": 400,
+  "detail": "The request contains malformed data"
+}
+```
 
-2. **Consistency**: Uniform error format across your API
+### 2. Consistency
+Uniform error format across your API
+```csharp
+{
+  "type": "https://example.com/errors/validation",
+  "title": "Validation Error",
+  "status": 422,
+  "detail": "Name field is required"
+}
+```
 
-3. **Rich details**: More information than just status codes
+### 3. Rich Details
+More information than just status codes:
+- Human-readable error messages
+- Machine-readable error types
+- Custom extension fields
+- Documentation links via type URLs
 
-4. **Extensibility**: Can add custom properties
+### 4. Extensibility
+Add custom properties as needed:
+
+```csharp
+{
+  "type": "https://example.com/errors/rate-limited",
+  "title": "Too Many Requests",
+  "status": 429,
+  "retryAfter": 60,
+  "quotaLimit": 1000
+}
+```
+
+### 5. Framework Integration
+.NET Core built-in support:
+```csharp
+return Problem(
+    title: "Payment Required",
+    detail: "Your account balance is insufficient",
+    statusCode: 402,
+    type: "https://api/errors/insufficient-funds");
+```
+
+### Comparison Table
+| Feature          | Problem Details | Custom Format |
+|------------------|-----------------|---------------|
+| Standardized     | ✅ Yes          | ❌ No         |
+| Consistent       | ✅ Yes          | ❌ Varies     |
+| Extensible       | ✅ Yes          | ✅ Yes        |
+| Documentation    | ✅ URL-based    | ❌ Ad-hoc     |
+| Framework Support| ✅ Built-in     | ❌ Manual     |
 
 ## Basic Implementation in .NET Core
 
